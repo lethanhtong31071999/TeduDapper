@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<data name="SKURequiredErrorMsg" xml:space="preserve">
+    <value>Nhập mã SKU</value>
+  </data>
+</root>

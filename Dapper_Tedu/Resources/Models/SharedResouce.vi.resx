@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<data name="SKUMinAndMaxLengthErrorMsg" xml:space="preserve">
+    <value>{0} cần ít nhất {2} và tối đa {1} ký tự.</value>
+    </data>
+	<data name="InvalidLanguage" xml:space="preserve">
+    <value>Ngôn ngữ này không hỗ trợ</value>
+    </data>
+</root>

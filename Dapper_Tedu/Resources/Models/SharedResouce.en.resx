@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<data name="SKUMinAndMaxLengthErrorMsg" xml:space="preserve">
+    <value>The {0} must be at least {2} characters long and maximum at {1}.</value>
+    </data>
+	<data name="InvalidLanguage" xml:space="preserve">
+    <value>Language is currently not supported</value>
+    </data>
+</root>

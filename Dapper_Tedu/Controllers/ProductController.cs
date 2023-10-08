@@ -1,37 +1,53 @@
 using System.Data.SqlClient;
+using System.Globalization;
 using Dapper;
+using Dapper_Tedu.Dtos;
+using Dapper_Tedu.Extensions;
+using Dapper_Tedu.Filters;
 using Dapper_Tedu.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace Dapper_Tedu.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/{culture}/[controller]")]
     [ApiController]
+    [MiddlewareFilter(typeof(LocalizationPipeline))]
     public class ProductController : ControllerBase
     {
         private readonly string _connectionString;
-        public ProductController(IConfiguration configuration)
+        private readonly IStringLocalizer<Product> _productLocalizer;
+        public readonly IStringLocalizer<SharedResouce> localizer;
+        private readonly string _languageId;
+        public ProductController(IConfiguration configuration, IStringLocalizer<Product> productLocalizer, IStringLocalizer<SharedResouce> localizer)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
+            this.localizer = localizer;
+            _productLocalizer = productLocalizer;
+            _languageId = CultureInfo.CurrentCulture.Name;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Product>> Get()
+        [Route("Get")]
+        public async Task<IActionResult> Get()
         {
+            var culture = CultureInfo.CurrentCulture.Name;
             using (var conn = new SqlConnection(_connectionString))
             {
                 if (conn.State == System.Data.ConnectionState.Closed)
                 {
                     conn.Open();
-                    var result = await conn.QueryAsync<Product>(ProductSql.StoreGetProductAll, null, null, null, System.Data.CommandType.StoredProcedure);
-                    return result;
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@languageId", _languageId, dbType: System.Data.DbType.String);
+                    var result = await conn.QueryAsync<Product>(ProductSql.StoreGetAll, parameters, null, null, System.Data.CommandType.StoredProcedure);
+                    return Ok(result);
                 }
             }
-            return null;
+            return BadRequest();
         }
 
         [HttpGet("{productId}", Name = "Get")]
-        public async Task<Product> Get([FromRoute] int productId)
+        public async Task<IActionResult> Get([FromRoute] int productId)
         {
 
             using (var conn = new SqlConnection(_connectionString))
@@ -41,15 +57,49 @@ namespace Dapper_Tedu.Controllers
                     conn.Open();
                     var parameters = new DynamicParameters();
                     parameters.Add("@productId", productId, System.Data.DbType.Int64);
-                    var result = await conn.QueryAsync<Product>(ProductSql.StoreGetProductById, parameters, null, null, System.Data.CommandType.StoredProcedure);
-                    return result.SingleOrDefault();
+                    parameters.Add("@languageId", _languageId, System.Data.DbType.String);
+                    var result = await conn.QueryAsync<Product>(ProductSql.StoreGetById, parameters, null, null, System.Data.CommandType.StoredProcedure);
+                    return Ok(result.SingleOrDefault());
                 }
             }
-            return null;
+            return BadRequest();
+        }
+
+        [HttpGet("paging", Name = "GetPagination")]
+        public async Task<PagedResult<Product>> GetPagination([FromQuery] string? searchTerm, [FromQuery] int pageIndex, [FromQuery] int PageSize, [FromQuery] int categoryId)
+        {
+
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                if (conn.State == System.Data.ConnectionState.Closed)
+                {
+                    conn.Open();
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@searchTerm", searchTerm, System.Data.DbType.String);
+                    parameters.Add("@pageIndex", pageIndex, System.Data.DbType.Int32);
+                    parameters.Add("@PageSize", PageSize, System.Data.DbType.Int32);
+                    parameters.Add("@categoryId", categoryId, System.Data.DbType.Int32);
+                    parameters.Add("@languageId", _languageId, System.Data.DbType.String);
+                    parameters.Add("@totalRow", dbType: System.Data.DbType.Int32, direction: System.Data.ParameterDirection.Output);
+                    var result = await conn.QueryAsync<Product>(ProductSql.StoreGetByPagination, parameters, null, null, System.Data.CommandType.StoredProcedure);
+                    var totalRow = parameters.Get<int>("@totalRow");
+
+                    return new PagedResult<Product>()
+                    {
+                        PageIndex = pageIndex,
+                        PageSize = PageSize,
+                        Result = result,
+                        TotalRow = totalRow
+                    };
+                }
+            }
+            return new PagedResult<Product>();
         }
 
         [HttpPost]
-        public async Task<int> Post([FromBody] Product product)
+        [ValidateModel]
+        [ValidateLanguageId]
+        public async Task<IActionResult> Post([FromBody] Product product)
         {
             var newId = 0;
             using (var conn = new SqlConnection(_connectionString))
@@ -62,16 +112,26 @@ namespace Dapper_Tedu.Controllers
                     parameters.Add("@price", product.Price, System.Data.DbType.Double);
                     parameters.Add("@imageUrl", product.ImageUrl, System.Data.DbType.String);
                     parameters.Add("@isActive", product.IsActive, System.Data.DbType.Boolean);
+                    parameters.Add("@languageId", _languageId, System.Data.DbType.String);
+                    parameters.Add("@content", product.Content, System.Data.DbType.String);
+                    parameters.Add("@name", product.Name, System.Data.DbType.String);
+                    parameters.Add("@description", product.Description, System.Data.DbType.String);
+                    parameters.Add("@seoDescription", product.SeoDescription, System.Data.DbType.String);
+                    parameters.Add("@seoAlias", product.SeoAlias, System.Data.DbType.String);
+                    parameters.Add("@seoTitle", product.SeoTitle, System.Data.DbType.String);
+                    parameters.Add("@seoKeyword", product.SeoKeyword, System.Data.DbType.String);
                     parameters.Add("@id", dbType: System.Data.DbType.Int32, direction: System.Data.ParameterDirection.Output);
-                    await conn.QueryAsync<Product>(ProductSql.StoreCreateProduct, parameters, null, null, System.Data.CommandType.StoredProcedure);
+                    await conn.QueryAsync<Product>(ProductSql.StoreCreate, parameters, null, null, System.Data.CommandType.StoredProcedure);
                     newId = parameters.Get<int>("@id");
                 }
             }
-            return newId;
+            return Ok(newId);
         }
 
         [HttpPut("{productId}")]
-        public async Task Put([FromRoute] int productId, [FromBody] Product product)
+        [ValidateModel]
+        [ValidateLanguageId]
+        public async Task<IActionResult> Put([FromRoute] int productId, [FromBody] Product product)
         {
             using (var conn = new SqlConnection(_connectionString))
             {
@@ -83,14 +143,23 @@ namespace Dapper_Tedu.Controllers
                     parameters.Add("@sku", product.Sku, System.Data.DbType.String);
                     parameters.Add("@price", product.Price, System.Data.DbType.Double);
                     parameters.Add("@imageUrl", product.ImageUrl, System.Data.DbType.String);
+                    parameters.Add("@languageId", _languageId, System.Data.DbType.String);
                     parameters.Add("@isActive", product.IsActive, System.Data.DbType.Boolean);
-                    await conn.QueryAsync<Product>(ProductSql.StoreUpdateProduct, parameters, null, null, System.Data.CommandType.StoredProcedure);
+                    parameters.Add("@content", product.Content, System.Data.DbType.String);
+                    parameters.Add("@name", product.Name, System.Data.DbType.String);
+                    parameters.Add("@description", product.Description, System.Data.DbType.String);
+                    parameters.Add("@seoDescription", product.SeoDescription, System.Data.DbType.String);
+                    parameters.Add("@seoAlias", product.SeoAlias, System.Data.DbType.String);
+                    parameters.Add("@seoTitle", product.SeoTitle, System.Data.DbType.String);
+                    parameters.Add("@seoKeyword", product.SeoKeyword, System.Data.DbType.String);
+                    await conn.QueryAsync<Product>(ProductSql.StoreUpdate, parameters, null, null, System.Data.CommandType.StoredProcedure);
                 }
             }
+            return Ok();
         }
 
         [HttpDelete("{productId}")]
-        public async Task Delete([FromRoute] int productId)
+        public async Task<IActionResult> Delete([FromRoute] int productId)
         {
             using (var conn = new SqlConnection(_connectionString))
             {
@@ -99,9 +168,10 @@ namespace Dapper_Tedu.Controllers
                     conn.Open();
                     var parameters = new DynamicParameters();
                     parameters.Add("@productId", productId);
-                    await conn.QueryAsync<Product>(ProductSql.StoreDeleteProduct, parameters, null, null, System.Data.CommandType.StoredProcedure);
+                    await conn.QueryAsync<Product>(ProductSql.StoreDelete, parameters, null, null, System.Data.CommandType.StoredProcedure);
                 }
             }
+            return NoContent();
         }
     }
 }

@@ -12,16 +12,60 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
     <PackageReference Include="Dapper" Version="2.0.151" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.22" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Controllers\" />
     <None Remove="Models\" />
     <None Remove="SqlQuery\" />
+    <None Remove="Extensions\" />
+    <None Remove="Middlewares\" />
+    <None Remove="Resources\" />
+    <None Remove="Resources\Controllers\" />
+    <None Remove="Resources\Models\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
     <Folder Include="Models\" />
     <Folder Include="SqlQuery\" />
+    <Folder Include="Extensions\" />
+    <Folder Include="Middlewares\" />
+    <Folder Include="Resources\" />
+    <Folder Include="Resources\Controllers\" />
+    <Folder Include="Resources\Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Models\Product.vi.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Product.vi.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Models\Product %28copy%29.vi.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Product.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Models\SharedResouce.vi.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SharedResouce.vi.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Models\SharedResouce.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SharedResouce.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources\Models\Product.en.Designer.cs">
+      <DependentUpon>Product.en.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Models\Product.vi.Designer.cs">
+      <DependentUpon>Product.vi.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Models\SharedResouce.vi.Designer.cs">
+      <DependentUpon>SharedResouce.vi.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Models\SharedResouce.en.Designer.cs">
+      <DependentUpon>SharedResouce.en.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

@@ -46,8 +46,8 @@ namespace Dapper_Tedu.Controllers
             return BadRequest();
         }
 
-        [HttpGet("{productId}", Name = "Get")]
-        public async Task<IActionResult> Get([FromRoute] int productId)
+        [HttpGet("{id}", Name = "Get")]
+        public async Task<IActionResult> Get([FromRoute] int id)
         {
 
             using (var conn = new SqlConnection(_connectionString))
@@ -56,7 +56,7 @@ namespace Dapper_Tedu.Controllers
                 {
                     conn.Open();
                     var parameters = new DynamicParameters();
-                    parameters.Add("@productId", productId, System.Data.DbType.Int64);
+                    parameters.Add("@id", id, System.Data.DbType.Int64);
                     parameters.Add("@languageId", _languageId, System.Data.DbType.String);
                     var result = await conn.QueryAsync<Product>(ProductSql.StoreGetById, parameters, null, null, System.Data.CommandType.StoredProcedure);
                     return Ok(result.SingleOrDefault());
@@ -98,7 +98,7 @@ namespace Dapper_Tedu.Controllers
 
         [HttpPost]
         [ValidateModel]
-        [ValidateLanguageId]
+        [ValidateLanguageIdAttribute]
         public async Task<IActionResult> Post([FromBody] Product product)
         {
             var newId = 0;
@@ -128,10 +128,10 @@ namespace Dapper_Tedu.Controllers
             return Ok(newId);
         }
 
-        [HttpPut("{productId}")]
+        [HttpPut("{id}")]
         [ValidateModel]
-        [ValidateLanguageId]
-        public async Task<IActionResult> Put([FromRoute] int productId, [FromBody] Product product)
+        [ValidateLanguageIdAttribute]
+        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] Product product)
         {
             using (var conn = new SqlConnection(_connectionString))
             {
@@ -139,7 +139,7 @@ namespace Dapper_Tedu.Controllers
                 {
                     conn.Open();
                     var parameters = new DynamicParameters();
-                    parameters.Add("@productId", productId, System.Data.DbType.Int32);
+                    parameters.Add("@id", id, System.Data.DbType.Int32);
                     parameters.Add("@sku", product.Sku, System.Data.DbType.String);
                     parameters.Add("@price", product.Price, System.Data.DbType.Double);
                     parameters.Add("@imageUrl", product.ImageUrl, System.Data.DbType.String);
@@ -158,8 +158,8 @@ namespace Dapper_Tedu.Controllers
             return Ok();
         }
 
-        [HttpDelete("{productId}")]
-        public async Task<IActionResult> Delete([FromRoute] int productId)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
             using (var conn = new SqlConnection(_connectionString))
             {
@@ -167,7 +167,7 @@ namespace Dapper_Tedu.Controllers
                 {
                     conn.Open();
                     var parameters = new DynamicParameters();
-                    parameters.Add("@productId", productId);
+                    parameters.Add("@productId", id);
                     await conn.QueryAsync<Product>(ProductSql.StoreDelete, parameters, null, null, System.Data.CommandType.StoredProcedure);
                 }
             }

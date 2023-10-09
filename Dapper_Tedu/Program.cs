@@ -1,20 +1,8 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using System.Text.Json;
 using Newtonsoft.Json.Serialization;
-using Microsoft.Extensions.Logging;
-using System.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Localization.Routing;
-using Microsoft.AspNetCore.Localization;
-using System.Globalization;
 using Dapper_Tedu.Dtos;
-using Microsoft.AspNetCore.Mvc.Razor;
-using System.Reflection;
 using Dapper_Tedu.Models;
 
 var builder = WebApplication.CreateBuilder(args);

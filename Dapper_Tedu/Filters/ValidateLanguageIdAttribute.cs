@@ -8,7 +8,7 @@ using Microsoft.Extensions.Localization;
 
 namespace Dapper_Tedu.Filters
 {
-    public class ValidateLanguageId : ActionFilterAttribute
+    public class ValidateLanguageIdAttribute : ActionFilterAttribute
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {

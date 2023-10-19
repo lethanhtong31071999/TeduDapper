@@ -19,7 +19,7 @@ namespace Dapper_Tedu.Filters
             {
                 context.Result = new BadRequestObjectResult(new
                 {
-                    message = controller.localizer["InvalidLanguage"]
+                    message = controller.localizer["InvalidLanguage"].ToString()
                 });
             }
         }

@@ -29,7 +29,7 @@ namespace Dapper_Tedu.Controllers
 
         [HttpGet]
         [Route("Get")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] int? categoryId)
         {
             var culture = CultureInfo.CurrentCulture.Name;
             using (var conn = new SqlConnection(_connectionString))
@@ -39,6 +39,7 @@ namespace Dapper_Tedu.Controllers
                     conn.Open();
                     var parameters = new DynamicParameters();
                     parameters.Add("@languageId", _languageId, dbType: System.Data.DbType.String);
+                    parameters.Add("@categoryId", categoryId, dbType: System.Data.DbType.Int32);
                     var result = await conn.QueryAsync<Product>(ProductSql.StoreGetAll, parameters, null, null, System.Data.CommandType.StoredProcedure);
                     return Ok(result);
                 }
@@ -56,7 +57,7 @@ namespace Dapper_Tedu.Controllers
                 {
                     conn.Open();
                     var parameters = new DynamicParameters();
-                    parameters.Add("@id", id, System.Data.DbType.Int64);
+                    parameters.Add("@id", id, System.Data.DbType.Int32);
                     parameters.Add("@languageId", _languageId, System.Data.DbType.String);
                     var result = await conn.QueryAsync<Product>(ProductSql.StoreGetById, parameters, null, null, System.Data.CommandType.StoredProcedure);
                     return Ok(result.SingleOrDefault());
@@ -66,7 +67,7 @@ namespace Dapper_Tedu.Controllers
         }
 
         [HttpGet("paging", Name = "GetPagination")]
-        public async Task<PagedResult<Product>> GetPagination([FromQuery] string? searchTerm, [FromQuery] int pageIndex, [FromQuery] int PageSize, [FromQuery] int categoryId)
+        public async Task<PagedResult<Product>> GetPagination([FromQuery] string? searchTerm, [FromQuery] int pageIndex, [FromQuery] int PageSize, [FromQuery] int? categoryId)
         {
 
             using (var conn = new SqlConnection(_connectionString))
@@ -80,6 +81,7 @@ namespace Dapper_Tedu.Controllers
                     parameters.Add("@PageSize", PageSize, System.Data.DbType.Int32);
                     parameters.Add("@categoryId", categoryId, System.Data.DbType.Int32);
                     parameters.Add("@languageId", _languageId, System.Data.DbType.String);
+                    parameters.Add("@categoryId", categoryId, System.Data.DbType.Int32);
                     parameters.Add("@totalRow", dbType: System.Data.DbType.Int32, direction: System.Data.ParameterDirection.Output);
                     var result = await conn.QueryAsync<Product>(ProductSql.StoreGetByPagination, parameters, null, null, System.Data.CommandType.StoredProcedure);
                     var totalRow = parameters.Get<int>("@totalRow");
@@ -120,6 +122,7 @@ namespace Dapper_Tedu.Controllers
                     parameters.Add("@seoAlias", product.SeoAlias, System.Data.DbType.String);
                     parameters.Add("@seoTitle", product.SeoTitle, System.Data.DbType.String);
                     parameters.Add("@seoKeyword", product.SeoKeyword, System.Data.DbType.String);
+                    parameters.Add("@categoryIds", product.CategoryIds, System.Data.DbType.String);
                     parameters.Add("@id", dbType: System.Data.DbType.Int32, direction: System.Data.ParameterDirection.Output);
                     await conn.QueryAsync<Product>(ProductSql.StoreCreate, parameters, null, null, System.Data.CommandType.StoredProcedure);
                     newId = parameters.Get<int>("@id");
@@ -152,6 +155,7 @@ namespace Dapper_Tedu.Controllers
                     parameters.Add("@seoAlias", product.SeoAlias, System.Data.DbType.String);
                     parameters.Add("@seoTitle", product.SeoTitle, System.Data.DbType.String);
                     parameters.Add("@seoKeyword", product.SeoKeyword, System.Data.DbType.String);
+                    parameters.Add("@categoryIds", product.CategoryIds, System.Data.DbType.String);
                     await conn.QueryAsync<Product>(ProductSql.StoreUpdate, parameters, null, null, System.Data.CommandType.StoredProcedure);
                 }
             }

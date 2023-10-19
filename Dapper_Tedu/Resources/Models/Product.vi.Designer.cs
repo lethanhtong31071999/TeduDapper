@@ -58,6 +58,15 @@ namespace Dapper_Tedu.Resources.Models {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cần ít nhất 1 mã danh mục cho sản phẩm này.
+        /// </summary>
+        internal static string CategoryIdsRequireErrorMsg {
+            get {
+                return ResourceManager.GetString("CategoryIdsRequireErrorMsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Nhập mã SKU.
         /// </summary>
         internal static string SKURequiredErrorMsg {

@@ -25,6 +25,7 @@
     <None Remove="Resources\" />
     <None Remove="Resources\Controllers\" />
     <None Remove="Resources\Models\" />
+    <None Remove="Data\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
@@ -35,6 +36,7 @@
     <Folder Include="Resources\" />
     <Folder Include="Resources\Controllers\" />
     <Folder Include="Resources\Models\" />
+    <Folder Include="Data\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\Models\Product.vi.resx">

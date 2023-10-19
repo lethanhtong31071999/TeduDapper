@@ -2,5 +2,8 @@
 <root>
 	<data name="SKURequiredErrorMsg" xml:space="preserve">
     <value>SKU is required!</value>
-  </data>
+    </data>
+	<data name="CategoryIdsRequireErrorMsg" xml:space="preserve">
+    <value>It is required at least a valid categoryId</value>
+    </data>
 </root>

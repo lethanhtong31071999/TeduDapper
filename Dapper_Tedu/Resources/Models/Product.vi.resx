@@ -2,5 +2,8 @@
 <root>
 	<data name="SKURequiredErrorMsg" xml:space="preserve">
     <value>Nhập mã SKU</value>
-  </data>
+    </data>
+	<data name="CategoryIdsRequireErrorMsg" xml:space="preserve">
+    <value>Cần ít nhất 1 mã danh mục cho sản phẩm này</value>
+    </data>
 </root>

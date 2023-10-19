@@ -42,6 +42,13 @@ namespace Dapper_Tedu.Models
         public string? SeoDescription { get; set; }
         public string? SeoKeyword { get; set; }
         public string? SeoTitle { get; set; }
+
+        // Other Information
+        [Required(ErrorMessage = "CategoryIdsRequireErrorMsg")]
+        [MinLength(1, ErrorMessage = "CategoryIdsMinLengthErrorMsg")]
+        public string CategoryIds { get; set; }
+        public int? CurrentCategoryId { get; set; }
+        public string? CategoryName { get; set; }
     }
 }
 
